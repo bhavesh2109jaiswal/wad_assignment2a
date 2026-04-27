@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Registration & Data</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body {
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  .main-box {
+    width: 100%;
+    max-width: 600px; /* Centered medium size box */
+    background: white;
+    border-radius: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="main-box shadow p-4 p-md-5">
+  <h3 class="text-center mb-4">User Registration</h3>
+  
+  <form id="regForm" class="mb-4">
+    <input type="text" id="name" class="form-control mb-3" placeholder="Enter Name" required>
+    <input type="email" id="email" class="form-control mb-3" placeholder="Enter Email" required>
+    <input type="password" id="password" class="form-control mb-3" placeholder="Enter Password" required>
+    <button type="submit" class="btn btn-primary w-100">Register</button>
+  </form>
+
+  <hr class="my-4">
+
+  <h4 class="text-center mb-3">Registered Users</h4>
+  <div class="table-responsive">
+    <table class="table table-bordered mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody id="userTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+let users = JSON.parse(localStorage.getItem('users')) || [];
+let table = document.getElementById('userTable');
+
+// Function to render the users in the table
+function renderTable() {
+  table.innerHTML = ''; // Clear table
+  users.forEach(user => {
+    let row = `<tr>
+      <td>${user.name}</td>
+      <td>${user.email}</td>
+    </tr>`;
+    table.innerHTML += row;
+  });
+}
+
+// Render the initial table on page load
+renderTable();
+
+document.getElementById('regForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  let user = {
+    name: document.getElementById('name').value,
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value
+  };
+
+  // AJAX POST request (dummy API)
+  let xhr = new XMLHttpRequest();
+  xhr.open('POST', 'https://jsonplaceholder.typicode.com/posts', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+
+  xhr.onload = function() {
+    if (xhr.status === 201) {
+      // Push to array
+      users.push(user);
+
+      // Save to localStorage
+      localStorage.setItem('users', JSON.stringify(users));
+
+      alert('Registration Successful!');
+      
+      // Update the table directly on the same page
+      renderTable();
+      
+      // Clear the form inputs
+      document.getElementById('regForm').reset();
+    }
+  };
+
+  xhr.send(JSON.stringify(user));
+});
+</script>
+
+</body>
+</html>
